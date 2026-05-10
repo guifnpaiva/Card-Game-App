@@ -13,7 +13,8 @@ class Gamepage extends StatefulWidget {
   @override
   _GamepageState createState() => _GamepageState();
 
-  const Gamepage({Key? key,
+  const Gamepage({
+    Key? key,
     required this.gameModes,
   }) : super(key: key);
 }
@@ -24,18 +25,17 @@ class _GamepageState extends State<Gamepage> {
   double maxW = 0;
   double maxH = 80.0.h;
   int len = 0;
-  List<Map<String,AppCard>> gameMode = [];
+  List<Map<String, AppCard>> gameMode = [];
 
   void loadCards() {
     cards = [];
     gameMode = [];
 
-
     // Load from Map.dart the cards
     for (var element in widget.gameModes) {
       Deck deck = listDeck.where((deck) => deck.name == element).first;
       for (var cards in deck.cards) {
-        Map<String,AppCard> cartas = {};
+        Map<String, AppCard> cartas = {};
         cartas[deck.name] = cards;
         gameMode.add(cartas);
       }
@@ -46,71 +46,69 @@ class _GamepageState extends State<Gamepage> {
 
     // Create widget for the cards
     for (var item in gameMode) {
-      cards.add(
-          Container(
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(27.0),
-                color: listDeck.where((deck) => deck.name == item.keys.first).first.color,
-                boxShadow:  [
-                  BoxShadow(
-                      color: Colors.black.withOpacity(0.04),
-                      offset: const Offset(4,4)
-                  ),
-                ]
-            ),
-            alignment: Alignment.center,
-            child: Column(
-              children: [
-                Container(
-                  margin: EdgeInsets.only(top: maxH*0.05),
-                  height: maxH*0.08,
-                  width: maxW*0.70,
-                  child: Text(
-                    item.keys.first,
-                    textAlign: TextAlign.start,
-                    style: TextStyle(
-                      fontFamily: "Madani",
-                      fontSize: 27.0.sp * (maxH/80.0.h),
-                      color: Colors.white,
-                    ),
-                  ),
+      cards.add(Container(
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(27.0),
+            color: listDeck
+                .where((deck) => deck.name == item.keys.first)
+                .first
+                .color,
+            boxShadow: [
+              BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.04),
+                  offset: const Offset(4, 4)),
+            ]),
+        alignment: Alignment.center,
+        child: Column(
+          children: [
+            Container(
+              margin: EdgeInsets.only(top: maxH * 0.05),
+              height: maxH * 0.08,
+              width: maxW * 0.70,
+              child: Text(
+                item.keys.first,
+                textAlign: TextAlign.start,
+                style: TextStyle(
+                  fontFamily: "Madani",
+                  fontSize: 27.0.sp * (maxH / 80.0.h),
+                  color: Colors.white,
                 ),
-                Container(
-                  margin: EdgeInsets.only(top: maxH*0.02),
-                  height: maxH*0.66,
-                  width: maxW*0.70,
-                  child:  Text(
-                    item.values.first.descri,
-                    textAlign: TextAlign.start,
-                    style: TextStyle(
-                      fontFamily: "Madani",
-                      fontSize: 15.0.sp *(maxH/80.0.h),
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ],
+              ),
             ),
-          )
-      );
+            Container(
+              margin: EdgeInsets.only(top: maxH * 0.02),
+              height: maxH * 0.66,
+              width: maxW * 0.70,
+              child: Text(
+                item.values.first.descri,
+                textAlign: TextAlign.start,
+                style: TextStyle(
+                  fontFamily: "Madani",
+                  fontSize: 15.0.sp * (maxH / 80.0.h),
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ));
     }
 
     // Insert Last Card (End Game)
     cards.insert(
-        0,
-        endGameCard(),
+      0,
+      endGameCard(),
     );
   }
 
-  void getSize(){
+  void getSize() {
     double size = 80.0.h;
     double descrease = 0.2.h;
 
-    for (int i = 0; i < 200; i++){
-      if((size-descrease*i)/1.60 <= 98.0.w)
-      {
-        maxW = (size-descrease*i)/1.60;
-        maxH = size-descrease*i;
+    for (int i = 0; i < 200; i++) {
+      if ((size - descrease * i) / 1.60 <= 98.0.w) {
+        maxW = (size - descrease * i) / 1.60;
+        maxH = size - descrease * i;
         break;
       }
     }
@@ -131,20 +129,21 @@ class _GamepageState extends State<Gamepage> {
   Widget build(BuildContext context) {
     return GestureDetector(
       // Double Tap Enable Focus
-      onDoubleTap: (){
-        setState((){
+      onDoubleTap: () {
+        setState(() {
           status = !status;
         });
       },
       child: Scaffold(
-        backgroundColor: status
-            ? Colors.grey.withOpacity(0.25)
-            : Colors.white,
+        backgroundColor:
+            status ? Colors.grey.withValues(alpha: 0.25) : Colors.white,
         body: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             // Spacer
-            SizedBox(height: 4.0.h,),
+            SizedBox(
+              height: 4.0.h,
+            ),
             // Card
             SizedBox(
                 height: maxH,
@@ -152,23 +151,20 @@ class _GamepageState extends State<Gamepage> {
                 child: AppinioSwiper(
                   // Even if the last card is swiped, this state reload the
                   // card again
-                  onEnd: (){
+                  onEnd: () {
                     setState(() {
-                      cards.add(
-                        endGameCard()
-                      );
+                      cards.add(endGameCard());
                     });
                   },
                   // Called when a card is swiped
-                  onSwipe: (index){
-                    setState((){
+                  onSwipe: (index, direction) {
+                    setState(() {
                       len = cards.length;
                     });
                   },
                   // Cards widget, previously loaded
                   cards: cards,
-                )
-            ),
+                )),
             // Buttons
             Padding(
                 padding: EdgeInsets.fromLTRB(10.0.w, 4.0.h, 10.0.w, 0),
@@ -177,23 +173,24 @@ class _GamepageState extends State<Gamepage> {
                     : Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          // TODO - Back Button
+                          // Back Button
                           OutlinedButton(
                               onPressed: () => Navigator.of(context).pop(),
                               style: ButtonStyle(
-                                  shape: MaterialStateProperty.all(
+                                  // Updated to WidgetStateProperty
+                                  shape: WidgetStateProperty.all(
                                     RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(10.0),
                                     ),
                                   ),
-                                  side: MaterialStateProperty.all(
+                                  // Updated to WidgetStateProperty
+                                  side: WidgetStateProperty.all(
                                     const BorderSide(
                                       style: BorderStyle.solid,
                                       color: Colors.black,
                                       width: 2.0,
                                     ),
-                                  )
-                              ),
+                                  )),
                               child: SizedBox(
                                 height: 7.0.h,
                                 width: 17.0.sp + 16.0.w,
@@ -205,22 +202,22 @@ class _GamepageState extends State<Gamepage> {
                                       color: Colors.black,
                                       size: 20,
                                     ),
-                                    SizedBox(width: 2.0.w,),
+                                    SizedBox(
+                                      width: 2.0.w,
+                                    ),
                                     Expanded(
                                       child: Text(
                                         "Back",
                                         style: TextStyle(
                                             fontFamily: "Madani",
                                             fontSize: 17.0.sp,
-                                            color: Colors.black
-                                        ),
+                                            color: Colors.black),
                                       ),
                                     ),
                                   ],
                                 ),
-                              )
-                          ),
-                          // TODO - How to Play Button
+                              )),
+                          // How to Play Button
                           GestureDetector(
                             onTap: () => showHowtoPlay(),
                             child: Text(
@@ -228,15 +225,15 @@ class _GamepageState extends State<Gamepage> {
                               style: TextStyle(
                                   fontFamily: "Madani",
                                   fontSize: 17.0.sp,
-                                  color: Colors.grey
-                              ),
+                                  color: Colors.grey),
                             ),
                           ),
                         ],
-                )
-            ),
+                      )),
             // Spacer
-            SizedBox(height: 4.0.h,),
+            SizedBox(
+              height: 4.0.h,
+            ),
           ],
         ),
       ),
@@ -248,22 +245,12 @@ class _GamepageState extends State<Gamepage> {
       useSafeArea: false,
       context: context,
       builder: (BuildContext context) {
-        double size = 40.0.h;
-        double maxW = this.maxW;
-        double maxH = this.maxH;
-        double descrease = 0.2.h;
-        for (int i = 0; i < 200; i++){
-          if((size-descrease*i)/1.42 <= 70.0.w)
-          {
-            maxW = (size-descrease*i)/1.42;
-            maxH = size-descrease*i;
-            break;
-          }
-        }
+        double dialogMaxW = 80.0.w;
+        double dialogMaxH = 50.0.h;
         return StatefulBuilder(
           builder: (context, setState) => Dialog(
               insetPadding: EdgeInsets.zero,
-              backgroundColor: Colors.black.withOpacity(0.4),
+              backgroundColor: Colors.black.withValues(alpha: 0.4),
               child: SizedBox(
                 width: 100.0.h,
                 height: 100.0.h,
@@ -272,34 +259,37 @@ class _GamepageState extends State<Gamepage> {
                   child: Stack(
                     children: [
                       Positioned(
-                        left: 10.0.w,
+                        left: (100.0.w - dialogMaxW) / 2,
                         top: 16.0.h,
                         child: Container(
                           decoration: BoxDecoration(
                               color: Colors.white,
-                              borderRadius: BorderRadius.circular(10)
-                          ),
-                          width: 80.0.w,
-                          height: 50.0.h,
+                              borderRadius: BorderRadius.circular(10)),
+                          width: dialogMaxW,
+                          height: dialogMaxH,
                           child: Container(
-                              padding: EdgeInsets.symmetric(horizontal: 5.0.w, vertical: 2.0.h ),
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 5.0.w, vertical: 2.0.h),
                               decoration: BoxDecoration(
                                   color: Colors.white,
-                                  borderRadius: BorderRadius.circular(10)
-                              ),
-                              width: 80.0.w,
+                                  borderRadius: BorderRadius.circular(10)),
+                              width: dialogMaxW,
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text("How to Play ?",
+                                  Text(
+                                    "How to Play ?",
                                     style: TextStyle(
                                       fontFamily: "Madani",
                                       fontSize: 15.0.sp,
                                       color: Colors.black,
                                     ),
                                   ),
-                                  SizedBox(height: 1.0.h,),
-                                  Text("Description",
+                                  SizedBox(
+                                    height: 1.0.h,
+                                  ),
+                                  Text(
+                                    "Description",
                                     style: TextStyle(
                                       fontFamily: "Madani",
                                       fontSize: 13.0.sp,
@@ -307,8 +297,7 @@ class _GamepageState extends State<Gamepage> {
                                     ),
                                   ),
                                 ],
-                              )
-                          ),
+                              )),
                         ),
                       ),
                       Positioned(
@@ -331,80 +320,77 @@ class _GamepageState extends State<Gamepage> {
                     ],
                   ),
                 ),
-              )
-          ),
+              )),
         );
       },
     );
   }
 
-  Container endGameCard(){
+  Container endGameCard() {
     return Container(
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(27.0),
           color: const Color(0xffF38121),
-          boxShadow:  [
+          boxShadow: [
             BoxShadow(
-                color: Colors.black.withOpacity(0.04),
-                offset: const Offset(4,4)
-            ),
-          ]
-      ),
+                color: Colors.black.withValues(alpha: 0.04),
+                offset: const Offset(4, 4)),
+          ]),
       alignment: Alignment.center,
       child: Column(
         children: [
           Container(
-            margin: EdgeInsets.only(top: maxH*0.05),
-            height: maxH*0.08,
-            width: maxW*0.70,
+            margin: EdgeInsets.only(top: maxH * 0.05),
+            height: maxH * 0.08,
+            width: maxW * 0.70,
             child: Text(
               "End Game!",
               textAlign: TextAlign.start,
               style: TextStyle(
                 fontFamily: "Madani",
-                fontSize: 27.0.sp * (maxH/80.0.h),
+                fontSize: 27.0.sp * (maxH / 80.0.h),
                 color: Colors.white,
               ),
             ),
           ),
           Container(
-            margin: EdgeInsets.only(top: maxH*0.02),
-            height: maxH*0.5,
-            width: maxW*0.70,
-            child:  Text(
+            margin: EdgeInsets.only(top: maxH * 0.02),
+            height: maxH * 0.5,
+            width: maxW * 0.70,
+            child: Text(
               "No cards left!",
               textAlign: TextAlign.start,
               style: TextStyle(
                 fontFamily: "Madani",
-                fontSize: 15.0.sp *(maxH/80.0.h),
+                fontSize: 15.0.sp * (maxH / 80.0.h),
                 color: Colors.white,
               ),
             ),
           ),
           Padding(
             padding: EdgeInsets.only(
-                top: maxH*0.03,
-                left: maxW*0.1,
-                right: maxW*0.1
-            ),
+                top: maxH * 0.03, left: maxW * 0.1, right: maxW * 0.1),
             child: OutlinedButton(
-                onPressed: () {setState(() {
-                  loadCards();
-                });},
+                onPressed: () {
+                  setState(() {
+                    loadCards();
+                  });
+                },
                 style: ButtonStyle(
-                    shape: MaterialStateProperty.all(
+                    // Updated to WidgetStateProperty
+                    shape: WidgetStateProperty.all(
                       RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10.0),
                       ),
                     ),
-                    side: MaterialStateProperty.all(
+                    // Updated to WidgetStateProperty
+                    side: WidgetStateProperty.all(
                       const BorderSide(
                         style: BorderStyle.solid,
                         color: Colors.white,
                         width: 2.0,
                       ),
-                    )
-                ),
+                    )),
                 child: SizedBox(
                   height: 7.0.h,
                   width: 17.0.sp + 18.0.w,
@@ -416,25 +402,24 @@ class _GamepageState extends State<Gamepage> {
                         color: Colors.white,
                         size: 20,
                       ),
-                      SizedBox(width: 2.0.w,),
+                      SizedBox(
+                        width: 2.0.w,
+                      ),
                       Expanded(
                         child: Text(
                           "Again",
                           style: TextStyle(
                               fontFamily: "Madani",
                               fontSize: 17.0.sp,
-                              color: Colors.white
-                          ),
+                              color: Colors.white),
                         ),
                       ),
                     ],
                   ),
-                )
-            ),
+                )),
           ),
         ],
       ),
     );
   }
 }
-

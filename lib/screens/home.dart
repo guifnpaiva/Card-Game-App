@@ -1,8 +1,8 @@
 import 'package:card_game/model/map.dart';
 import 'package:card_swiper/card_swiper.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:fullscreen/fullscreen.dart';
 import 'package:sizer/sizer.dart';
 import 'game.dart';
 
@@ -18,14 +18,15 @@ class _HomeState extends State<Home> {
   List<int> gameMode = [];
   List<String> gameModeTitle = [];
 
+  // Updated function using Flutter's native API
   Future<void> fullScreen() async {
-    return await FullScreen.enterFullScreen(FullScreenMode.EMERSIVE_STICKY);
+    await SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
   }
 
   @override void initState() {
     // TODO: implement initState
     super.initState();
-    WidgetsBinding.instance!.addPostFrameCallback((_) => fullScreen());
+    WidgetsBinding.instance.addPostFrameCallback((_) => fullScreen());
   }
 
   @override
@@ -68,7 +69,7 @@ class _HomeState extends State<Home> {
                 itemCount: listDeck.length,
                 pagination: SwiperPagination(
                     builder: DotSwiperPaginationBuilder(
-                        color: Colors.grey.withOpacity(0.4),
+                        color: Colors.grey.withValues(alpha: 0.4),
                         activeColor: Colors.black,
                         size: 1.5.w,
                         activeSize: 1.5.w
@@ -162,12 +163,12 @@ class _HomeState extends State<Home> {
                       ),
                     },
                     style: ButtonStyle(
-                        shape: MaterialStateProperty.all(
+                        shape: WidgetStateProperty.all(
                           RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10.0),
                           ),
                         ),
-                        side: MaterialStateProperty.all(
+                        side: WidgetStateProperty.all(
                           BorderSide(
                             style: BorderStyle.solid,
                             color: listDeck[index].gradient.colors
@@ -251,4 +252,3 @@ class _HomeState extends State<Home> {
       );
   }
 }
-
